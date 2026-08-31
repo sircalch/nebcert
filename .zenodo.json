@@ -1,0 +1,19 @@
+{
+  "title": "NEBCert: Automated Quality-Control, Transition State Verification, Nudged Elastic Band (NEB), Quantum Tunneling, and Reaction Kinetics Certification",
+  "description": "An open-source scientific toolkit to audit NEB reaction pathways, verify transition states (1 imaginary frequency along reaction coordinate), compute Eyring-Polanyi TST rate constants k(T), and calculate Wigner and Eckart quantum tunneling corrections.",
+  "creators": [
+    {
+      "name": "Monreal-Hernández, Andre",
+      "affiliation": "Independent Researcher"
+    }
+  ],
+  "access_right": "open",
+  "license": "MIT",
+  "keywords": [
+    "chemical-kinetics",
+    "nudged-elastic-band",
+    "transition-state-theory",
+    "quantum-tunneling",
+    "reproducibility"
+  ]
+}

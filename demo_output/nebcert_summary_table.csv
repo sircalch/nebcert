@@ -1,0 +1,12 @@
+Parameter,Value,Status
+Target Reaction Pathway,CH4 + OH* -> [TS]* -> CH3* + H2O (Hydrogen Abstraction) (ORCA 6.0.0 (CI-NEB / NumFreq)),PASS
+Theoretical Level / Functional,wB97X-D3 / def2-TZVP,PASS
+Forward Activation Barrier (E_a^fwd),5.22 kcal/mol (0.227 eV),PASS
+Reverse Activation Barrier (E_a^rev),19.52 kcal/mol (0.847 eV),PASS
+Reaction Energy (Delta E_rxn),-14.30 kcal/mol (-0.620 eV),PASS
+NEB Image Discretization,9 images (Path length = 2.80 A),PASS
+Transition State Imaginary Frequency,-1250.0 cm^-1 (1 imag mode),PASS
+Intrinsic Reaction Coordinate (IRC),Confirmed (Connects Reactants & Products),PASS
+TST Rate Constant (298.15 K),k = 9.21e+08 s^-1 (t_1/2 = 7.52e-10 s),PASS
+Arrhenius Parameters (A / E_a),"A = 2.52e+13 s^-1, E_a = 6.01 kcal/mol",PASS
+Quantum Tunneling (298.15 K),kappa_Eckart = 5120.88 (kappa_Wigner = 2.52),PASS

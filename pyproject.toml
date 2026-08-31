@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nebcert"
+version = "1.0.0"
+description = "Automated Quality-Control, Transition State Verification, Nudged Elastic Band (NEB), Quantum Tunneling, and Reaction Kinetics Certification (VASP, ORCA, Gaussian)"
+readme = "README.md"
+authors = [
+    { name = "Andre Monreal-Hernández", email = "amonreal@example.com" }
+]
+license = { text = "MIT" }
+keywords = [
+    "chemical-kinetics",
+    "transition-state-theory",
+    "nudged-elastic-band",
+    "neb",
+    "ci-neb",
+    "reaction-pathway",
+    "minimum-energy-path",
+    "quantum-tunneling",
+    "eckart-barrier",
+    "wigner-correction",
+    "irc",
+    "vasp",
+    "orca",
+    "gaussian",
+    "computational-chemistry",
+    "reproducibility"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Scientific/Engineering :: Physics",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent"
+]
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.20.0",
+    "scipy>=1.7.0",
+    "pandas>=1.3.0",
+    "matplotlib>=3.5.0",
+    "jinja2>=3.0.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "build>=0.10.0",
+    "twine>=4.0.0"
+]
+
+[project.scripts]
+nebcert = "nebcert.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/amonreal/nebcert"
+Documentation = "https://github.com/amonreal/nebcert#readme"
+Repository = "https://github.com/amonreal/nebcert.git"
+"Bug Tracker" = "https://github.com/amonreal/nebcert/issues"
+Changelog = "https://github.com/amonreal/nebcert/blob/main/CHANGELOG.md"
