@@ -1,4 +1,4 @@
-cff-version: 1.2.0
+﻿cff-version: 1.2.0
 message: "If you use this software in your research, please cite it as below."
 authors:
   - family-names: "Monreal-Hernández"
@@ -8,10 +8,11 @@ title: "NEBCert: Automated Quality-Control, Transition State Verification, Nudge
 version: 1.0.0
 date-released: 2026-08-31
 license: MIT
-repository-code: "https://github.com/amonreal/nebcert"
+repository-code: "https://github.com/sircalch/nebcert"
 keywords:
   - "chemical-kinetics"
   - "nudged-elastic-band"
   - "transition-state-theory"
   - "quantum-tunneling"
   - "reproducibility"
+

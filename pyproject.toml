@@ -1,4 +1,4 @@
-[build-system]
+﻿[build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
@@ -65,12 +65,13 @@ dev = [
 nebcert = "nebcert.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/amonreal/nebcert"
-Documentation = "https://github.com/amonreal/nebcert#readme"
-Repository = "https://github.com/amonreal/nebcert.git"
-"Bug Tracker" = "https://github.com/amonreal/nebcert/issues"
-Changelog = "https://github.com/amonreal/nebcert/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/sircalch/nebcert"
+Documentation = "https://github.com/sircalch/nebcert#readme"
+Repository = "https://github.com/sircalch/nebcert.git"
+"Bug Tracker" = "https://github.com/sircalch/nebcert/issues"
+Changelog = "https://github.com/sircalch/nebcert/blob/main/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
 include = ["nebcert*"]
+
 

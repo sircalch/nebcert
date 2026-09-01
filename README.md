@@ -1,6 +1,6 @@
-# NEBCert
+﻿# NEBCert
 
-[![CI](https://github.com/amonreal/nebcert/actions/workflows/test.yml/badge.svg)](https://github.com/amonreal/nebcert/actions)
+[![CI](https://github.com/sircalch/nebcert/actions/workflows/test.yml/badge.svg)](https://github.com/sircalch/nebcert/actions)
 [![PyPI version](https://img.shields.io/pypi/v/nebcert.svg?color=blue)](https://pypi.org/project/nebcert/)
 [![Python versions](https://img.shields.io/pypi/pyversions/nebcert.svg)](https://pypi.org/project/nebcert/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -72,7 +72,7 @@ pip install nebcert
 
 ### From Source
 ```bash
-git clone https://github.com/amonreal/nebcert.git
+git clone https://github.com/sircalch/nebcert.git
 cd nebcert
 pip install -e .[dev]
 ```
@@ -163,7 +163,7 @@ If you use NEBCert in your publications, please cite:
   year = {2026},
   version = {1.0.0},
   publisher = {Zenodo},
-  url = {https://github.com/amonreal/nebcert}
+  url = {https://github.com/sircalch/nebcert}
 }
 ```
 
@@ -172,3 +172,4 @@ If you use NEBCert in your publications, please cite:
 ## License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
