@@ -70,3 +70,7 @@ Documentation = "https://github.com/amonreal/nebcert#readme"
 Repository = "https://github.com/amonreal/nebcert.git"
 "Bug Tracker" = "https://github.com/amonreal/nebcert/issues"
 Changelog = "https://github.com/amonreal/nebcert/blob/main/CHANGELOG.md"
+
+[tool.setuptools.packages.find]
+include = ["nebcert*"]
+
