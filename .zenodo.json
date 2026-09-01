@@ -3,8 +3,9 @@
   "description": "An open-source scientific toolkit to audit NEB reaction pathways, verify transition states (1 imaginary frequency along reaction coordinate), compute Eyring-Polanyi TST rate constants k(T), and calculate Wigner and Eckart quantum tunneling corrections.",
   "creators": [
     {
-      "name": "Monreal-Hernández, Andre",
-      "affiliation": "Independent Researcher"
+      "name": "Monreal-Hernández, Andres",
+      "orcid": "0009-0009-1207-8597",
+      "affiliation": "Doctoral Research Group"
     }
   ],
   "access_right": "open",

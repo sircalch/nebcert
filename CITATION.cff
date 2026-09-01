@@ -2,8 +2,8 @@
 message: "If you use this software in your research, please cite it as below."
 authors:
   - family-names: "Monreal-Hernández"
-    given-names: "Andre"
-    orcid: "https://orcid.org/0009-0000-0000-0000"
+    given-names: "Andres"
+    orcid: "https://orcid.org/0009-0009-1207-8597"
 title: "NEBCert: Automated Quality-Control, Transition State Verification, Nudged Elastic Band (NEB), Quantum Tunneling, and Reaction Kinetics Certification"
 version: 1.0.0
 date-released: 2026-08-31

@@ -4,7 +4,7 @@ Nudged Elastic Band (NEB), Quantum Tunneling, and Reaction Kinetics Certificatio
 """
 
 __version__ = "1.0.0"
-__author__ = "Andre Monreal-Hernández"
+__author__ = "Andres Monreal-Hernández"
 __license__ = "MIT"
 
 from nebcert.core.neb_profile import calculate_neb_profile_analysis, NEBProfileResult
