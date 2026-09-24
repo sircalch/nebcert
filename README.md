@@ -66,8 +66,10 @@ In computational chemistry, heterogeneous catalysis, and atmospheric/combustion 
 ## Installation
 
 ### From PyPI
+> **Note:** PyPI release pending. Until then, install from the tagged GitHub release:
+
 ```bash
-pip install nebcert
+pip install "git+https://github.com/sircalch/nebcert@v1.0.0"
 ```
 
 ### From Source
