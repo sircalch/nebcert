@@ -51,7 +51,7 @@ def run_demo(output_dir: str = "nebcert_demo_output"):
     metadata = {
         "reaction": "CH4 + OH* -> [TS]* -> CH3* + H2O (Hydrogen Abstraction)",
         "functional": "wB97X-D3 / def2-TZVP",
-        "software": "ORCA 6.0.0 (CI-NEB / NumFreq)"
+        "software": "SYNTHETIC DEMO DATA (ORCA-like CI-NEB / NumFreq; not a real calculation)"
     }
 
     # 1. 9-image NEB reaction energy profile (eV)

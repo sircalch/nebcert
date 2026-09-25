@@ -105,7 +105,7 @@
         <header class="header">
             <div class="title-group">
                 <h1>NEBCert Reaction Kinetics & NEB Report</h1>
-                <p>CH4 + OH* -> [TS]* -> CH3* + H2O (Hydrogen Abstraction) &bull; wB97X-D3 / def2-TZVP (ORCA 6.0.0 (CI-NEB / NumFreq))</p>
+                <p>CH4 + OH* -> [TS]* -> CH3* + H2O (Hydrogen Abstraction) &bull; wB97X-D3 / def2-TZVP (SYNTHETIC DEMO DATA (ORCA-like CI-NEB / NumFreq; not a real calculation))</p>
             </div>
             <div>
                 <span class="status-badge badge-pass">
@@ -158,7 +158,7 @@
                 <div class="card-label">Quantum Tunneling (&kappa;_298)</div>
                 <div class="card-value">
                     
-                    5120.88
+                    4.85
                     
                 </div>
                 <div class="card-subtext">
@@ -211,10 +211,10 @@
                 
                 <tr>
                     <td><strong>Eckart Quantum Tunneling</strong></td>
-                    <td>&kappa;_Eckart = 5120.88 (298 K)</td>
+                    <td>&kappa;_Eckart = 4.85 (298 K)</td>
                     <td>1D Asymmetric Eckart Transmission</td>
                     <td><span class="tag tag-pass">PASS</span></td>
-                    <td style="color: var(--text-secondary)">Quantum tunneling corrections computed (|nu| = 1250.0 cm^-1). At 298.15 K: kappa_Wigner = 2.52, kappa_Eckart = 5120.88.</td>
+                    <td style="color: var(--text-secondary)">Quantum tunneling corrections computed (|nu| = 1250.0 cm^-1). At 298.15 K: kappa_Wigner = 2.52, kappa_Eckart = 4.85.</td>
                 </tr>
                 
             </tbody>
@@ -224,7 +224,7 @@
 
         <h2 class="section-title">Computational Methods (Publication Ready)</h2>
         <div class="box">
-            <pre id="methodsSnippet">Reaction kinetics and barrier profiles for CH4 + OH* -> [TS]* -> CH3* + H2O (Hydrogen Abstraction) were computed using ORCA 6.0.0 (CI-NEB / NumFreq) at the wB97X-D3 / def2-TZVP level of theory. Minimum energy paths, transition state verification, Eyring rate constants, and quantum tunneling corrections were certified using NEBCert v1.0.0 (Monreal-Hernández, 2026). The minimum energy path (MEP) was optimized with the nudged elastic band (NEB) method (9 images), yielding a forward activation barrier of E_a = 5.22 kcal/mol (0.227 eV) and Delta E_rxn = -14.30 kcal/mol. The transition state saddle point was verified by vibrational frequency analysis, exhibiting strictly one imaginary frequency along the reaction bond coordinate (nu_imag = -1250.0 cm^-1). Reaction rate constants were determined via Eyring Transition State Theory (k_298 = 9.21e+08 s^-1, Arrhenius A = 2.52e+13 s^-1, with asymmetric Eckart quantum tunneling factor kappa = 5120.88). The reaction pathway achieved an overall certification status of: PASS.
+            <pre id="methodsSnippet">Reaction kinetics and barrier profiles for CH4 + OH* -> [TS]* -> CH3* + H2O (Hydrogen Abstraction) were computed using SYNTHETIC DEMO DATA (ORCA-like CI-NEB / NumFreq; not a real calculation) at the wB97X-D3 / def2-TZVP level of theory. Minimum energy paths, transition state verification, Eyring rate constants, and quantum tunneling corrections were certified using NEBCert v1.0.0 (Monreal-Hernández, 2026). The minimum energy path (MEP) was optimized with the nudged elastic band (NEB) method (9 images), yielding a forward activation barrier of E_a = 5.22 kcal/mol (0.227 eV) and Delta E_rxn = -14.30 kcal/mol. The transition state saddle point was verified by vibrational frequency analysis, exhibiting strictly one imaginary frequency along the reaction bond coordinate (nu_imag = -1250.0 cm^-1). Reaction rate constants were determined via Eyring Transition State Theory (k_298 = 9.21e+08 s^-1, Arrhenius A = 2.52e+13 s^-1, with asymmetric Eckart quantum tunneling factor kappa = 4.85). The reaction pathway achieved an overall certification status of: PASS.
 </pre>
             <button class="btn-copy" onclick="copyToClipboard('methodsSnippet')">Copy Methods Snippet</button>
         </div>
@@ -237,7 +237,7 @@
   year = {2026},
   version = {1.0.0},
   publisher = {Zenodo},
-  url = {https://github.com/amonreal/nebcert}
+  url = {https://github.com/sircalch/nebcert}
 }
 </pre>
             <button class="btn-copy" onclick="copyToClipboard('bibSnippet')">Copy BibTeX</button>

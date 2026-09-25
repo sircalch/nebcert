@@ -35,6 +35,56 @@ class TunnelingResult:
     diagnostic_message: str
 
 
+def _logcosh(x: float) -> float:
+    x = abs(x)
+    return x + np.log1p(np.exp(-2.0 * x)) - np.log(2.0)
+
+
+def eckart_transmission_probability(
+    energy_ev: float,
+    e_forward_barrier_ev: float,
+    e_reverse_barrier_ev: float,
+    imaginary_freq_cm1: float
+) -> float:
+    """
+    Exact transmission probability P(E) through a 1D asymmetric Eckart barrier.
+
+    Eckart (1930) potential V(x) = A*y/(1+y) + B*y/(1+y)^2 with A = V1 - V2 and
+    B = (sqrt(V1) + sqrt(V2))^2. Matching the barrier-top curvature to the imaginary
+    frequency gives C = h^2/(8 m L^2) = (h*nu)^2 * B / (16 * V1 * V2)
+    (Johnston & Heicklen, J. Phys. Chem. 1962, 66, 532).
+
+    Parameters
+    ----------
+    energy_ev : float
+        Energy measured from the reactant asymptote (eV).
+    e_forward_barrier_ev, e_reverse_barrier_ev : float
+        Barrier heights from the reactant (V1) and product (V2) sides (eV).
+    imaginary_freq_cm1 : float
+        Magnitude of the transition-state imaginary frequency (cm^-1).
+    """
+    v1, v2 = float(e_forward_barrier_ev), float(e_reverse_barrier_ev)
+    h_nu_ev = PLANCK_H_J_S * SPEED_OF_LIGHT_CM_S * abs(float(imaginary_freq_cm1)) / EV_TO_JOULE
+    a_param = v1 - v2
+    b_param = (np.sqrt(v1) + np.sqrt(v2)) ** 2
+    c_param = (h_nu_ev ** 2) * b_param / (16.0 * v1 * v2)
+    d_arg = (b_param - c_param) / c_param
+
+    if energy_ev <= 0.0 or energy_ev <= a_param:
+        return 0.0
+    two_pi_a = np.pi * np.sqrt(energy_ev / c_param)
+    two_pi_b = np.pi * np.sqrt((energy_ev - a_param) / c_param)
+    s_arg = two_pi_a + two_pi_b
+    t_arg = two_pi_a - two_pi_b
+    # P = [cosh(s) - cosh(t)] / [cosh(s) + cosh(2*pi*d)], evaluated in log space to avoid overflow.
+    num = 1.0 - np.exp(_logcosh(t_arg) - _logcosh(s_arg))
+    if d_arg >= 0.0:
+        den = 1.0 + np.exp(_logcosh(np.pi * np.sqrt(d_arg)) - _logcosh(s_arg))
+    else:
+        den = 1.0 + np.cos(np.pi * np.sqrt(-d_arg)) * np.exp(-_logcosh(s_arg))
+    return float(num / den)
+
+
 def calculate_quantum_tunneling_corrections(
     imaginary_freq_cm1: float,
     e_forward_barrier_ev: float,
@@ -72,10 +122,8 @@ def calculate_quantum_tunneling_corrections(
     h_nu_j = PLANCK_H_J_S * SPEED_OF_LIGHT_CM_S * nu
     h_nu_ev = h_nu_j / EV_TO_JOULE
 
-    # Characteristic Eckart barrier parameter C
-    # C = (h*nu)^2 / [8 * (sqrt(V1) + sqrt(V2))^2]
-    c_param = (h_nu_ev**2) / (8.0 * (np.sqrt(v1) + np.sqrt(v2))**2)
-    delta_v = v1 - v2
+    def eckart_transmission(e_ev):
+        return eckart_transmission_probability(e_ev, v1, v2, nu)
 
     points = []
     for t in t_list:
@@ -85,41 +133,15 @@ def calculate_quantum_tunneling_corrections(
         # 1. Wigner: kappa_W = 1 + (1/24) * u^2
         kap_w = float(1.0 + (1.0 / 24.0) * (u_val**2))
 
-        # 2. Asymmetric Eckart Transmission Function P(E)
-        def eckart_transmission(e_ev):
-            if e_ev <= 0.0:
-                return 0.0
-            if e_ev - delta_v <= 0.0:
-                return 0.0
-
-            # 2*pi * a = 2*pi * 0.5 * sqrt(E / C)
-            two_pi_a = np.pi * np.sqrt(e_ev / c_param)
-            two_pi_b = np.pi * np.sqrt((e_ev - delta_v) / c_param)
-
-            # d parameter
-            arg_d = (4.0 * v1 * v2 - c_param) / c_param
-            if arg_d > 0:
-                two_pi_d = np.pi * np.sqrt(arg_d)
-                # cosh(2*pi*d)
-                denom = np.cosh(np.clip(two_pi_a + two_pi_b, -100, 100)) + np.cosh(np.clip(two_pi_d, -100, 100))
-            else:
-                two_pi_d = np.pi * np.sqrt(abs(arg_d))
-                denom = np.cosh(np.clip(two_pi_a + two_pi_b, -100, 100)) + np.cos(two_pi_d)
-
-            num = np.cosh(np.clip(two_pi_a + two_pi_b, -100, 100)) - np.cosh(np.clip(two_pi_a - two_pi_b, -100, 100))
-            return float(num / max(1e-15, denom))
-
-        # Integrate: kappa_Eckart = (1 / k_B T) * int_0^infty P(E) * exp(-(E - V1)/k_B T) dE
-        # Normalize relative to classical barrier transmission
+        # 2. Eckart: kappa = exp(V1/kT)/kT * int P(E) exp(-E/kT) dE, relative to classical TST
         def integrand(e):
-            p = eckart_transmission(e)
-            return p * np.exp(-(e - v1) / kb_t) / kb_t
+            return eckart_transmission(e) * np.exp(-(e - v1) / kb_t) / kb_t
 
-        # Numerical integration up to 10*kb_t above barrier
-        upper_limit = v1 + 15.0 * kb_t
+        lower_limit = max(0.0, v1 - v2)
+        upper_limit = v1 + 30.0 * kb_t
         try:
-            val, _ = quad(integrand, max(0.0, delta_v), upper_limit, limit=100)
-            kap_e = float(max(1.0, val))
+            val, _ = quad(integrand, lower_limit, upper_limit, limit=200, points=[v1])
+            kap_e = float(val)
         except Exception:
             kap_e = kap_w
 
