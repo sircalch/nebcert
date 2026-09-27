@@ -1,0 +1,5 @@
+*
+!.gitignore
+!*.inp
+!*.out
+!*.xyz

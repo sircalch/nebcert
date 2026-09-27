@@ -1,0 +1,6 @@
+! B3LYP D3BJ def2-SVP TightSCF NEB-TS Freq
+%neb
+  NEB_End_XYZFile "nh3_inverted.xyz"
+  NImages 7
+end
+* xyzfile 0 1 nh3_reactant.xyz

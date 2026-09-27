@@ -1,0 +1,7 @@
+! B3LYP D3BJ def2-SVP TightSCF NEB-TS Freq
+%neb
+  NEB_End_XYZFile "hnc_product.xyz"
+  NImages 9
+  PreOpt_Ends true
+end
+* xyzfile 0 1 hcn_reactant.xyz

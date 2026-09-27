@@ -140,13 +140,26 @@ def run_assess(args):
     tun_res = None
 
     # 1. Parse NEB / MEP input
+    orca_neb = None
     if args.input_neb:
         print(f"\n[NEBCert] Parsing NEB data from: {args.input_neb}...")
-        if args.input_neb.endswith(".dat"):
+        lower = args.input_neb.lower()
+        if lower.endswith(".dat"):
             try:
                 m_data = parse_vasp_neb_dat(args.input_neb)
             except Exception:
                 m_data = parse_mep_csv(args.input_neb)
+        elif lower.endswith((".out", ".log")):
+            m_data = parse_orca_neb_output(args.input_neb)
+            if not m_data["energies_ev"]:
+                print("[Error] No ORCA NEB 'PATH SUMMARY' table found in the file.", file=sys.stderr)
+                sys.exit(1)
+            orca_neb = m_data
+            print(f"  -> ORCA NEB: {m_data['n_images']} images, NEB converged: {m_data['neb_converged']}, "
+                  f"climbing image: {m_data['ci_index']}")
+            if m_data.get("ts"):
+                print(f"  -> NEB-TS transition state: E_a = {m_data['ts']['barrier_fwd_kcal']:.2f} kcal/mol, "
+                      f"TS optimisation converged: {m_data['ts']['converged']}")
         else:
             m_data = parse_mep_csv(args.input_neb)
 
@@ -163,10 +176,20 @@ def run_assess(args):
             frequencies_cm1=freq_list,
             irc_confirmed=args.irc
         )
+    elif orca_neb and orca_neb.get("frequencies"):
+        ts_res = verify_ts_frequency_and_irc(
+            frequencies_cm1=orca_neb["frequencies"],
+            irc_confirmed=args.irc
+        )
 
     # 3. Calculate kinetics and tunneling
     ea_val = None
-    if neb_res:
+    ea_rev = neb_res.e_reverse_barrier_ev if neb_res else None
+    if orca_neb and orca_neb.get("ts"):
+        # an optimised NEB-TS transition state is more accurate than the spline maximum of the band
+        ea_val = orca_neb["ts"]["barrier_fwd_ev"]
+        ea_rev = orca_neb["ts"]["barrier_rev_ev"]
+    elif neb_res:
         ea_val = neb_res.e_forward_barrier_ev
     elif args.barrier_ev:
         ea_val = float(args.barrier_ev)
@@ -179,7 +202,7 @@ def run_assess(args):
             tun_res = calculate_quantum_tunneling_corrections(
                 imaginary_freq_cm1=ts_res.imaginary_frequency_cm1,
                 e_forward_barrier_ev=ea_val,
-                e_reverse_barrier_ev=neb_res.e_reverse_barrier_ev if neb_res else None
+                e_reverse_barrier_ev=ea_rev
             )
 
     meta = {
@@ -251,7 +274,7 @@ def main():
 
     # Assess command
     assess_parser = subparsers.add_parser("assess", help="Assess NEB pathway, TS frequencies, and reaction kinetics")
-    assess_parser.add_argument("-i", "--input-neb", default=None, help="Path to NEB file (neb.dat, or CSV/TSV table of image energies)")
+    assess_parser.add_argument("-i", "--input-neb", default=None, help="Path to NEB file: VASP neb.dat, ORCA NEB/NEB-CI/NEB-TS output (.out/.log), or CSV/TSV table of image energies")
     assess_parser.add_argument("--frequencies", default=None, help="Comma-separated vibrational frequencies in cm^-1 (e.g. '-1250,150,300,800')")
     assess_parser.add_argument("--barrier-ev", type=float, default=None, help="Activation energy in eV (if not using NEB profile)")
     assess_parser.add_argument("--barrier-kcal", type=float, default=None, help="Activation energy in kcal/mol")

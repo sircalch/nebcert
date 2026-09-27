@@ -115,6 +115,7 @@ def calculate_neb_profile_analysis(
 
     # Force audit
     max_f = None
+    ts_f = None
     is_f_conv = True
     if tangent_forces_ev_ang is not None and len(tangent_forces_ev_ang) == n_img:
         # Check force specifically at climbing image
@@ -140,7 +141,7 @@ def calculate_neb_profile_analysis(
     # Decision logic
     if not is_f_conv:
         status = "WARNING"
-        diag = f"NEB Climbing Image forces unconverged (|F_tangent| = {max_f:.3f} > {force_convergence_threshold:.2f} eV/Å). Barrier estimate: E_a = {e_fwd_barrier_kcal:.2f} kcal/mol."
+        diag = f"NEB Climbing Image forces unconverged (|F| at climbing image = {ts_f:.3f} > {force_convergence_threshold:.2f} eV/Å). Barrier estimate: E_a = {e_fwd_barrier_kcal:.2f} kcal/mol."
     elif has_interm_min:
         status = "WARNING"
         diag = f"Complex reaction path: intermediate minimum detected along MEP. Multi-step reaction pathway should be split into distinct elemental steps."
