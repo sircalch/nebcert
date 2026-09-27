@@ -4,7 +4,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/nebcert.svg?color=blue)](https://pypi.org/project/nebcert/)
 [![Python versions](https://img.shields.io/pypi/pyversions/nebcert.svg)](https://pypi.org/project/nebcert/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1234600.svg)](https://doi.org/10.5281/zenodo.1234600)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22217586.svg)](https://doi.org/10.5281/zenodo.22217586)
 
 > **Automated Quality-Control, Transition State Verification, Nudged Elastic Band (NEB), Quantum Tunneling, and Reaction Kinetics Certification (VASP, ORCA, Gaussian).**
 
