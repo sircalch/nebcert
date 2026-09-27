@@ -94,7 +94,7 @@ def generate_nebcert_manuscript_assets(
 
     full_methods = (
         f"Reaction kinetics and barrier profiles for {rxn_str} were computed using {soft_str} at the {func_str} level of theory. "
-        f"Minimum energy paths, transition state verification, Eyring rate constants, and quantum tunneling corrections were certified using NEBCert v1.0.0 (Monreal-Hernández, 2026). "
+        f"Minimum energy paths, transition state verification, Eyring rate constants, and quantum tunneling corrections were certified using NEBCert v1.1.0 (Monreal-Hernández, 2026). "
         f"{neb_str}{ts_str}{tst_str}"
         f"The reaction pathway achieved an overall certification status of: {report.overall_status}."
     )
@@ -109,7 +109,7 @@ def generate_nebcert_manuscript_assets(
   author = {Monreal-Hern\\'andez, Andre},
   title = {{NEBCert: Automated Quality-Control, Transition State Verification, Nudged Elastic Band (NEB), Quantum Tunneling, and Reaction Kinetics Certification}},
   year = {2026},
-  version = {1.0.0},
+  version = {1.1.0},
   publisher = {Zenodo},
   url = {https://github.com/sircalch/nebcert}
 }

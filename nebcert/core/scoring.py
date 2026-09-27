@@ -99,7 +99,7 @@ def assess_reaction_pathway_quality(
         recommendations=recommendations,
         provenance={
             "tool": "NEBCert",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "citation": "Monreal-Hernández, A. (2026). NEBCert: Automated Quality-Control, Transition State Verification, Nudged Elastic Band (NEB), Quantum Tunneling, and Reaction Kinetics Certification."
         }
     )

@@ -2,4 +2,8 @@
 !.gitignore
 !*.inp
 !*.out
-!*.xyz
+!hcn_reactant.xyz
+!hnc_product.xyz
+!nh3_min.xyz
+!nh3_inverted.xyz
+!nh3_reactant.xyz

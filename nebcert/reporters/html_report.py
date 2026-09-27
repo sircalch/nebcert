@@ -268,7 +268,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         </div>
 
         <footer>
-            Generated automatically by <strong>NEBCert v1.0.0</strong> &bull; Reaction Kinetics & Transition State Certification &bull; Monreal-Hernández, 2026.
+            Generated automatically by <strong>NEBCert v1.1.0</strong> &bull; Reaction Kinetics & Transition State Certification &bull; Monreal-Hernández, 2026.
         </footer>
     </div>
 

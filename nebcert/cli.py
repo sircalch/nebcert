@@ -251,13 +251,13 @@ def print_citation():
   author = {Monreal-Hern\\'andez, Andre},
   title = {{NEBCert: Automated Quality-Control, Transition State Verification, Nudged Elastic Band (NEB), Quantum Tunneling, and Reaction Kinetics Certification}},
   year = {2026},
-  version = {1.0.0},
+  version = {1.1.0},
   publisher = {Zenodo},
   url = {https://github.com/sircalch/nebcert}
 }"""
     print("\nIf you use NEBCert in your publications, please cite:\n")
     print("APA Style:")
-    print("Monreal-Hernández, A. (2026). NEBCert: Automated Quality-Control, Transition State Verification, Nudged Elastic Band (NEB), Quantum Tunneling, and Reaction Kinetics Certification (v1.0.0). Zenodo. https://github.com/sircalch/nebcert\n")
+    print("Monreal-Hernández, A. (2026). NEBCert: Automated Quality-Control, Transition State Verification, Nudged Elastic Band (NEB), Quantum Tunneling, and Reaction Kinetics Certification (v1.1.0). Zenodo. https://github.com/sircalch/nebcert\n")
     print("BibTeX:")
     print(bib)
     print()

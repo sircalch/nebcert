@@ -3,7 +3,7 @@ NEBCert: Automated Quality-Control, Transition State Verification,
 Nudged Elastic Band (NEB), Quantum Tunneling, and Reaction Kinetics Certification.
 """
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __author__ = "Andres Monreal-Hernández"
 __license__ = "MIT"
 

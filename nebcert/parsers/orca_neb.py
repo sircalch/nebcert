@@ -99,7 +99,7 @@ def parse_orca_neb_output(filepath: str) -> Dict[str, Any]:
         ts["barrier_fwd_kcal"] = (ts["energy_eh"] - energies[0]) * HARTREE_TO_KCAL
         after_neb = content.split("PATH SUMMARY FOR NEB-TS")[0]
         ts_part = after_neb.split("THE NEB OPTIMIZATION HAS CONVERGED")[-1] if neb_converged else after_neb
-        ts["converged"] = bool(re.search(r"THE OPTIMIZATION HAS CONVERGED", ts_part))
+        ts["converged"] = bool(re.search(r"THE (?:TS )?OPTIMIZATION HAS CONVERGED", ts_part))
 
     energies_ev = [(e - energies[0]) * HARTREE_TO_EV for e in energies] if energies else []
     return {
