@@ -47,8 +47,23 @@ All scripts and results are in `validation/`; every number below is regenerated 
   Eyring rate agree with overreact to 3 × 10⁻¹¹ and 1.3 × 10⁻⁹.
 - **Version 1.0.0** (the only release published before 1.2.0; `legacy100_grid.py`): its κ_Eckart differs from the
   reference by more than a factor of 2 at 529 of the 720 points (median ratio 6.8, range 3 × 10⁻⁸ to 2 × 10⁴³).
-- **Real ORCA 6.1.1 calculations** (`make_neb_inputs.py`, `benchmark_neb.py`; B3LYP-D3(BJ)/def2-SVP): see
-  `validation/results/neb_benchmark.csv` and CHANGELOG.md.
+- **Real ORCA 6.1.1 calculations** (`make_neb_inputs.py`, `benchmark_neb.py`; B3LYP-D3(BJ)/def2-SVP; results in
+  `validation/results/neb_benchmark.csv`, figure `validation/figures/fig3_profiles.png`). Eight reactions with
+  NEB-TS and frequencies (H + HCl, OH + H₂, CH₃ + H₂, Cl⁻ + CH₃Cl, HCOH → H₂CO, H₂CO → H₂ + CO, HCN → HNC,
+  NH₃ inversion), three degraded runs and one failed job.
+  - Values read from the `.out` file agree with ORCA's full-precision files: band energies within 0.006 kcal/mol
+    (`.final.interp`; the output table has five decimals), TS energies within 0.003 kcal/mol
+    (`_NEB-TS_converged.xyz`), frequencies within 0.005 cm⁻¹ (`.hess`). κ_Eckart for the eight transition states
+    agrees with the mpmath reference to 3 × 10⁻⁹.
+  - Verdicts: PASS for six reactions; WARNING for HCOH → H₂CO and H₂CO → H₂ + CO, whose imaginary frequencies
+    (2060 and 1880 cm⁻¹) put 298.15 K below the crossover temperature (κ_Eckart = 1.8 × 10⁵ and 7.6 × 10⁶).
+    FAIL for a band stopped after three iterations (its highest image, 45.8 kcal/mol, against a converged barrier
+    of 2.3 kcal/mol) and for a band whose end points collapsed into the same structure; the failed job is
+    rejected. A 3-image NEB-CI passes, with the climbing-image barrier equal to the 8-image NEB-TS barrier
+    (84.36 kcal/mol; the spline maximum is 85.62).
+  - Version 1.1.0 warned on every reaction (the `--irc` bug), passed the failed job and crashed on the collapsed
+    band. Version 1.0.0 passed the failed job, crashed on the collapsed band, and its κ_Eckart was 1.6 to
+    6 × 10⁴⁶ times the reference for the eight transition states.
 
 ### Not validated
 - The VASP `neb.dat` and Gaussian IRC parsers have not been tested on real output; the Gaussian IRC parser is
