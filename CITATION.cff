@@ -5,10 +5,10 @@ authors:
     given-names: "Andrés"
     orcid: "https://orcid.org/0009-0009-1207-8597"
     affiliation: "Universidad Estatal de Sonora"
-title: "NEBCert: Automated Quality-Control, Transition State Verification, Nudged Elastic Band (NEB), Quantum Tunneling, and Reaction Kinetics Certification"
-version: 1.1.0
+title: "NEBCert: quality checks for NEB paths, transition states and tunnelling-corrected rate constants"
+version: 1.2.0
 doi: 10.5281/zenodo.22217586
-date-released: 2026-08-31
+date-released: 2026-10-01
 license: MIT
 repository-code: "https://github.com/sircalch/nebcert"
 keywords:

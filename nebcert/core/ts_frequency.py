@@ -25,8 +25,8 @@ def verify_ts_frequency_and_irc(
     irc_confirmed: Optional[bool] = None
 ) -> TSFrequencyResult:
     """
-    Verifies that a candidate transition state has strictly 1 imaginary frequency
-    with significant magnitude along the reaction coordinate, and audits IRC validation.
+    Counts the imaginary frequencies of a candidate transition state. PASS requires exactly one with
+    |nu| >= min_significant_freq_cm1 and no smaller imaginary modes.
 
     Parameters
     ----------
@@ -34,42 +34,54 @@ def verify_ts_frequency_and_irc(
         Vibrational harmonic frequencies in cm^-1 (negative values represent imaginary frequencies).
     min_significant_freq_cm1 : float, default 50.0 cm^-1
     irc_confirmed : bool, optional
-        Whether an IRC calculation successfully verified connection to reactant and product minima.
+        Whether an IRC calculation connected the intended reactant and product minima, as reported by the
+        user; NEBCert does not read or check the IRC itself.
 
     Returns
     -------
     result : TSFrequencyResult
     """
     freqs = np.asarray(frequencies_cm1, dtype=float)
-    imag_mask = freqs < -1.0  # Threshold to exclude numerical zero modes
-    n_imag = int(np.sum(imag_mask))
+    # Imaginary modes are printed as negative numbers. Modes between -min_significant and
+    # -noise_floor are counted separately: they are usually numerical noise (loose optimisation,
+    # integration grid) rather than a second reaction coordinate, but cannot be ignored silently.
+    noise_floor = 1.0
+    sig_mask = freqs <= -min_significant_freq_cm1
+    small_mask = (freqs < -noise_floor) & ~sig_mask
+    n_sig = int(np.sum(sig_mask))
+    n_small = int(np.sum(small_mask))
+    n_imag = n_sig + n_small
 
     imag_val = None
-    is_sig = False
     if n_imag >= 1:
-        imag_val = float(np.min(freqs[imag_mask]))
-        if abs(imag_val) >= min_significant_freq_cm1:
-            is_sig = True
+        imag_val = float(np.min(freqs[freqs < -noise_floor]))
+    is_sig = n_sig >= 1
+    is_first_order = (n_sig == 1 and n_small == 0)
+    small_str = ", ".join(f"{f:.1f}" for f in sorted(freqs[small_mask]))
 
-    is_first_order = (n_imag == 1)
-
-    # Certification decision
     if n_imag == 0:
         status = "FAIL"
-        diag = "No imaginary frequencies detected (0 imaginary modes). Structure is a local minimum, NOT a transition state."
-    elif n_imag > 1:
+        diag = "No imaginary frequency: the structure is a minimum, not a transition state."
+    elif n_sig > 1:
         status = "FAIL"
-        diag = f"Higher-order saddle point detected ({n_imag} imaginary frequencies). Structure is an artifact and not a true transition state."
-    elif not is_sig:
+        diag = (f"{n_sig} imaginary frequencies of magnitude >= {min_significant_freq_cm1:.0f} cm^-1 "
+                f"(higher-order saddle point).")
+    elif n_sig == 0:
         status = "WARNING"
-        diag = f"Weak imaginary frequency (|nu_imag| = {abs(imag_val):.1f} < {min_significant_freq_cm1:.1f} cm^-1). Likely an unphysical torsional or soft lattice mode rather than bond breaking/formation."
+        diag = (f"Only small imaginary frequencies ({small_str} cm^-1, |nu| < {min_significant_freq_cm1:.0f}): "
+                f"no clear reaction-coordinate mode.")
+    elif n_small > 0:
+        status = "WARNING"
+        diag = (f"One imaginary frequency of {imag_val:.1f} cm^-1 plus {n_small} small one(s) ({small_str} cm^-1); "
+                f"tighten the optimisation or the grid and recompute the frequencies.")
     elif irc_confirmed is False:
         status = "WARNING"
-        diag = f"Single imaginary frequency verified ({imag_val:.1f} cm^-1), but IRC path failed to connect intended reactants and products."
+        diag = f"One imaginary frequency ({imag_val:.1f} cm^-1), but the IRC did not connect the intended minima."
     else:
         status = "PASS"
-        irc_str = " (IRC connectivity confirmed)" if irc_confirmed is True else ""
-        diag = f"Strict 1st-order saddle point certified with 1 significant imaginary frequency (nu_imag = {imag_val:.1f} cm^-1){irc_str}."
+        irc_str = (" IRC connectivity reported by the user." if irc_confirmed is True else
+                   " Whether this mode connects the intended minima is not checked (no IRC).")
+        diag = f"One imaginary frequency ({imag_val:.1f} cm^-1).{irc_str}"
 
     return TSFrequencyResult(
         n_imaginary_frequencies=n_imag,

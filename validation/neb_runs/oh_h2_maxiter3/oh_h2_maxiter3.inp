@@ -1,0 +1,8 @@
+! UKS B3LYP D3BJ def2-SVP TightSCF NEB-TS Freq
+%neb
+  NEB_End_XYZFile "product.xyz"
+  NImages 8
+  PreOpt_Ends true
+  MaxIter 3
+end
+* xyzfile 0 2 reactant.xyz

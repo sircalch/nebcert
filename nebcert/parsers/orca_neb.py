@@ -57,7 +57,7 @@ def parse_orca_neb_output(filepath: str) -> Dict[str, Any]:
     data : dict
         energies_eh, energies_ev (relative to image 0), coordinates_s_ang (cumulative distance),
         tangent_forces (max |F_perp| per image, eV/Angstrom), rms_forces (eV/Angstrom),
-        ci_index, n_images, neb_converged, is_converged (alias), ts (dict or None: energy_eh,
+        ci_index, n_images, n_images_without_energy (images printed with E = 0, i.e. not computed), neb_converged, is_converged (alias), ts (dict or None: energy_eh,
         barrier_fwd_ev, barrier_rev_ev, barrier_fwd_kcal, converged), frequencies (final
         vibrational frequencies, translations/rotations excluded, or None).
     """
@@ -101,8 +101,12 @@ def parse_orca_neb_output(filepath: str) -> Dict[str, Any]:
         ts_part = after_neb.split("THE NEB OPTIMIZATION HAS CONVERGED")[-1] if neb_converged else after_neb
         ts["converged"] = bool(re.search(r"THE (?:TS )?OPTIMIZATION HAS CONVERGED", ts_part))
 
+    # ORCA prints the PATH SUMMARY table once before the band is optimised, with E = 0.00000 for the images
+    # not yet computed; a job whose image calculations fail (or that is killed at that stage) leaves only this table.
+    n_missing = sum(1 for e in energies if e == 0.0)
     energies_ev = [(e - energies[0]) * HARTREE_TO_EV for e in energies] if energies else []
     return {
+        "n_images_without_energy": n_missing,
         "energies_eh": energies,
         "energies_ev": energies_ev,
         "coordinates_s_ang": dists or None,

@@ -32,3 +32,14 @@ def test_ts_frequency_multiple_imaginary_fail():
 
     assert res.n_imaginary_frequencies == 2
     assert res.status == "FAIL"
+
+
+def test_small_extra_imaginary_mode_is_a_warning_not_a_higher_order_saddle():
+    res = verify_ts_frequency_and_irc([-1200.0, -15.0, 200.0, 900.0])
+    assert res.status == "WARNING"
+    assert res.is_true_first_order_saddle_point is False
+    assert res.imaginary_frequency_cm1 == -1200.0
+
+
+def test_only_small_imaginary_mode_is_a_warning():
+    assert verify_ts_frequency_and_irc([-20.0, 100.0, 300.0]).status == "WARNING"

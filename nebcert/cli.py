@@ -1,4 +1,4 @@
-﻿"""
+"""
 Command Line Interface (CLI) for NEBCert.
 """
 
@@ -8,6 +8,7 @@ import argparse
 import numpy as np
 
 from nebcert import __version__
+from nebcert.citation import APA, BIBTEX
 from nebcert.parsers.vasp_neb import parse_vasp_neb_dat
 from nebcert.parsers.orca_neb import parse_orca_neb_output
 from nebcert.parsers.gaussian_irc import parse_gaussian_irc_output
@@ -114,14 +115,14 @@ def run_demo(output_dir: str = "nebcert_demo_output"):
     generate_nebcert_html_report(report, html_p, methods_text=methods_txt, citation_bib=bib_txt)
 
     print("\n" + "="*70)
-    print(f" [RESULT] Overall Reaction Pathway Certification: {report.overall_status}")
+    print(f" [RESULT] Overall status: {report.overall_status}")
     print(f" [SCORE]  {report.validation_score}")
     print("="*70)
     print(f" * Reaction Target : {report.metadata['reaction']}")
     print(f" * Activation Barrier: E_a^fwd = {report.neb_profile.e_forward_barrier_kcal_mol:.2f} kcal/mol ({report.neb_profile.e_forward_barrier_ev:.3f} eV) | Delta E_rxn = {report.neb_profile.delta_e_reaction_kcal_mol:.2f} kcal/mol")
-    print(f" * Transition State : {report.ts_frequency.imaginary_frequency_cm1:.1f} cm^-1 (Strict 1st-order saddle point) | Status: {report.ts_frequency.status}")
+    print(f" * Transition State : {report.ts_frequency.imaginary_frequency_cm1:.1f} cm^-1 | Status: {report.ts_frequency.status}")
     print(f" * Eyring TST Rate  : k(298 K) = {report.tst_kinetics.k_298_s_minus_1:.2e} s^-1 (Arrhenius A = {report.tst_kinetics.arrhenius_pre_exponential_a_s_minus_1:.2e} s^-1, E_a = {report.tst_kinetics.arrhenius_e_activation_kcal_mol:.2f} kcal/mol)")
-    print(f" * Quantum Tunneling: kappa_Eckart(298 K) = {report.tunneling.kappa_eckart_298:.2f} (Tunneling acceleration = x{report.tunneling.kappa_eckart_298:.1f})")
+    print(f" * Quantum Tunneling: kappa_Eckart(298 K) = {report.tunneling.kappa_eckart_298:.2f}")
     print("="*70)
     print(f"\nAll outputs successfully saved to: {os.path.abspath(output_dir)}/")
     print(f"Open {os.path.abspath(html_p)} in your browser to inspect the full report.\n")
@@ -154,6 +155,11 @@ def run_assess(args):
             if not m_data["energies_ev"]:
                 print("[Error] No ORCA NEB 'PATH SUMMARY' table found in the file.", file=sys.stderr)
                 sys.exit(1)
+            if m_data["n_images_without_energy"]:
+                print(f"[Error] {m_data['n_images_without_energy']} of {m_data['n_images']} images in the last "
+                      f"'PATH SUMMARY' table have no energy (E = 0): the image calculations failed or never ran; see the ORCA errors above the table.",
+                      file=sys.stderr)
+                sys.exit(1)
             orca_neb = m_data
             print(f"  -> ORCA NEB: {m_data['n_images']} images, NEB converged: {m_data['neb_converged']}, "
                   f"climbing image: {m_data['ci_index']}")
@@ -163,10 +169,15 @@ def run_assess(args):
         else:
             m_data = parse_mep_csv(args.input_neb)
 
+        ts_data = orca_neb.get("ts") if orca_neb else None
         neb_res = calculate_neb_profile_analysis(
             energies_ev=m_data["energies_ev"],
             coordinates_s_ang=m_data.get("coordinates_s_ang"),
-            tangent_forces_ev_ang=m_data.get("tangent_forces")
+            tangent_forces_ev_ang=m_data.get("tangent_forces"),
+            band_converged=orca_neb["neb_converged"] if orca_neb else None,
+            ts_energy_rel_ev=ts_data["barrier_fwd_ev"] if ts_data else None,
+            ts_optimisation_converged=ts_data["converged"] if ts_data else None,
+            climbing_image_index=orca_neb["ci_index"] if orca_neb else None
         )
 
     # 2. Parse / evaluate TS frequencies
@@ -183,32 +194,33 @@ def run_assess(args):
         )
 
     # 3. Calculate kinetics and tunneling
+    # Electronic barriers (forward and reverse) for the Eckart barrier; the band already holds the
+    # optimised NEB-TS energy when there is one.
     ea_val = None
     ea_rev = neb_res.e_reverse_barrier_ev if neb_res else None
-    if orca_neb and orca_neb.get("ts"):
-        # an optimised NEB-TS transition state is more accurate than the spline maximum of the band
-        ea_val = orca_neb["ts"]["barrier_fwd_ev"]
-        ea_rev = orca_neb["ts"]["barrier_rev_ev"]
-    elif neb_res:
+    if neb_res:
         ea_val = neb_res.e_forward_barrier_ev
     elif args.barrier_ev:
         ea_val = float(args.barrier_ev)
     elif args.barrier_kcal:
         ea_val = float(args.barrier_kcal) / 23.06054887
 
-    if ea_val is not None:
-        tst_res = calculate_eyring_tst_rates(e_activation_ev=ea_val)
-        if ts_res and ts_res.imaginary_frequency_cm1:
-            tun_res = calculate_quantum_tunneling_corrections(
-                imaginary_freq_cm1=ts_res.imaginary_frequency_cm1,
-                e_forward_barrier_ev=ea_val,
-                e_reverse_barrier_ev=ea_rev
-            )
+    if args.gibbs_barrier_kcal is not None:
+        tst_res = calculate_eyring_tst_rates(e_activation_ev=float(args.gibbs_barrier_kcal) / 23.06054887,
+                                             barrier_type="gibbs")
+    elif ea_val is not None:
+        tst_res = calculate_eyring_tst_rates(e_activation_ev=ea_val, barrier_type="electronic")
+    if ea_val is not None and ts_res and ts_res.imaginary_frequency_cm1:
+        tun_res = calculate_quantum_tunneling_corrections(
+            imaginary_freq_cm1=ts_res.imaginary_frequency_cm1,
+            e_forward_barrier_ev=ea_val,
+            e_reverse_barrier_ev=ea_rev
+        )
 
     meta = {
-        "reaction": args.reaction or "Chemical Reaction Pathway",
-        "functional": args.functional or "DFT",
-        "software": args.software or "VASP / ORCA / Gaussian"
+        "reaction": args.reaction or "the reaction",
+        "functional": args.functional or "an unstated level of theory",
+        "software": args.software or ("ORCA" if orca_neb else "an unstated program")
     }
 
     report = assess_reaction_pathway_quality(
@@ -235,7 +247,7 @@ def run_assess(args):
     generate_nebcert_html_report(report, html_p, methods_text=methods_txt, citation_bib=bib_txt)
 
     print("\n" + "="*70)
-    print(f" [RESULT] Overall Quality Certification: {report.overall_status}")
+    print(f" [RESULT] Overall status: {report.overall_status}")
     print(f" [SCORE]  {report.validation_score}")
     print("="*70)
     if report.neb_profile:
@@ -247,20 +259,14 @@ def run_assess(args):
 
 
 def print_citation():
-    bib = """@software{monreal2026nebcert,
-  author = {Monreal-Hern\\'andez, Andre},
-  title = {{NEBCert: Automated Quality-Control, Transition State Verification, Nudged Elastic Band (NEB), Quantum Tunneling, and Reaction Kinetics Certification}},
-  year = {2026},
-  version = {1.1.0},
-  publisher = {Zenodo},
-  url = {https://github.com/sircalch/nebcert}
-}"""
-    print("\nIf you use NEBCert in your publications, please cite:\n")
-    print("APA Style:")
-    print("Monreal-Hernández, A. (2026). NEBCert: Automated Quality-Control, Transition State Verification, Nudged Elastic Band (NEB), Quantum Tunneling, and Reaction Kinetics Certification (v1.1.0). Zenodo. https://github.com/sircalch/nebcert\n")
-    print("BibTeX:")
-    print(bib)
     print()
+    print("If you use NEBCert in your publications, please cite:")
+    print()
+    print("APA Style:")
+    print(APA)
+    print()
+    print("BibTeX:")
+    print(BIBTEX)
 
 
 def main():
@@ -278,7 +284,8 @@ def main():
     assess_parser.add_argument("--frequencies", default=None, help="Comma-separated vibrational frequencies in cm^-1 (e.g. '-1250,150,300,800')")
     assess_parser.add_argument("--barrier-ev", type=float, default=None, help="Activation energy in eV (if not using NEB profile)")
     assess_parser.add_argument("--barrier-kcal", type=float, default=None, help="Activation energy in kcal/mol")
-    assess_parser.add_argument("--irc", action="store_true", help="Flag if IRC was confirmed")
+    assess_parser.add_argument("--gibbs-barrier-kcal", type=float, default=None, help="Gibbs free energy of activation (kcal/mol) for the Eyring rate constant; without it the rate uses the electronic barrier and is flagged")
+    assess_parser.add_argument("--irc", action="store_const", const=True, default=None, help="Declare that an IRC connected the intended minima (not checked by NEBCert); omit when no IRC was run")
     assess_parser.add_argument("-o", "--output", default="nebcert_output", help="Directory for output report (default: nebcert_output)")
     assess_parser.add_argument("--reaction", default=None, help="Reaction description (e.g. 'CH4 + OH -> CH3 + H2O')")
     assess_parser.add_argument("--functional", default=None, help="DFT functional / level of theory")

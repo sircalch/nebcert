@@ -18,3 +18,10 @@ def test_quantum_tunneling_corrections():
     assert res.kappa_wigner_298 > 1.0
     assert res.kappa_eckart_298 >= 1.0
     assert len(res.temperature_points) == 9
+
+
+def test_crossover_temperature_warning():
+    from nebcert.core.tunneling import calculate_quantum_tunneling_corrections as c
+    assert c(800.0, 0.4, 0.6).status == "PASS"      # T_c = 183 K
+    assert c(2000.0, 0.4, 0.6).status == "WARNING"  # T_c = 458 K
+    assert c(800.0, 0.0, 0.6).status == "FAIL"

@@ -1,9 +1,9 @@
 """
-NEBCert: Automated Quality-Control, Transition State Verification,
-Nudged Elastic Band (NEB), Quantum Tunneling, and Reaction Kinetics Certification.
+NEBCert: quality checks for NEB reaction paths, transition states and
+tunnelling-corrected rate constants.
 """
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 __author__ = "Andres Monreal-Hernández"
 __license__ = "MIT"
 

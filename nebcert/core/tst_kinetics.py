@@ -33,13 +33,14 @@ class TSTKineticsResult:
     half_life_298_s: float
     arrhenius_pre_exponential_a_s_minus_1: float
     arrhenius_e_activation_kcal_mol: float
-    status: str  # 'PASS', 'WARNING', 'FAIL'
+    status: str  # 'PASS' or 'NOT_APPLICABLE'
     diagnostic_message: str
 
 
 def calculate_eyring_tst_rates(
     e_activation_ev: float,
-    temperatures_k: Optional[List[float]] = None
+    temperatures_k: Optional[List[float]] = None,
+    barrier_type: str = "electronic"
 ) -> TSTKineticsResult:
     """
     Computes Eyring-Polanyi transition state theory rate constants k(T) across temperatures
@@ -48,9 +49,15 @@ def calculate_eyring_tst_rates(
     Parameters
     ----------
     e_activation_ev : float
-        Activation energy / free energy barrier (eV).
+        Barrier inserted in k = (k_B T / h) exp(-E / k_B T), in eV.
     temperatures_k : list of float, optional
         List of temperatures in Kelvin (default: [200, 250, 298.15, 350, 400, 500, 600, 800, 1000]).
+    barrier_type : {'electronic', 'gibbs'}
+        'gibbs' when the barrier is a Gibbs free energy of activation (Delta G double-dagger): the
+        result is the Eyring rate constant (PASS). 'electronic' (the default, and what an NEB band
+        gives) means an electronic energy difference without zero-point, thermal or entropic terms:
+        the number is then not a TST rate constant and the status is NOT_APPLICABLE (reported, but not
+        counted in the overall status).
 
     Returns
     -------
@@ -106,8 +113,18 @@ def calculate_eyring_tst_rates(
         k_298 = rate_pts[0].k_tst_s_minus_1
         half_298 = rate_pts[0].half_life_seconds
 
-    status = "PASS"
-    diag = f"Eyring TST kinetics evaluated across {len(t_list)} temperatures (k_298 = {k_298:.2e} s^-1, Arrhenius A = {arr_a:.2e} s^-1, E_a = {arr_ea_kcal:.2f} kcal/mol)."
+    if barrier_type not in ("electronic", "gibbs"):
+        raise ValueError("barrier_type must be 'electronic' or 'gibbs'")
+    summary = (f"k_298 = {k_298:.2e} s^-1 over {len(t_list)} temperatures (Arrhenius fit A = {arr_a:.2e} s^-1, "
+               f"E_a = {arr_ea_kcal:.2f} kcal/mol)")
+    if barrier_type == "gibbs":
+        status = "PASS"
+        diag = f"Eyring rate constant from a Gibbs barrier of {e_act_kcal:.2f} kcal/mol: {summary}."
+    else:
+        status = "NOT_APPLICABLE"
+        diag = (f"Eyring expression evaluated with an electronic barrier of {e_act_kcal:.2f} kcal/mol "
+                f"(no zero-point, thermal or entropic terms): {summary}. This is not a TST rate constant; "
+                f"supply a Gibbs barrier for one.")
 
     return TSTKineticsResult(
         e_activation_ev=e_activation_ev,

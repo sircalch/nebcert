@@ -21,3 +21,10 @@ def test_orca6_neb_ts_hcn_to_hnc():
     assert d["ts"]["barrier_fwd_kcal"] == pytest.approx(47.78, abs=0.02)
     assert d["energies_ev"][-1] * 23.0605 == pytest.approx(13.56, abs=0.05)   # HNC above HCN
     assert d["frequencies"] == pytest.approx([-1116.47, 2089.78, 2625.04])
+
+
+def test_truncated_output_reports_images_without_energy():
+    d = parse_orca_neb_output(os.path.join(os.path.dirname(F), "orca_neb_truncated_excerpt.out"))
+    assert d["n_images"] == 10
+    assert d["n_images_without_energy"] == 9
+    assert d["neb_converged"] is False

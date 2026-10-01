@@ -1,10 +1,16 @@
 """
-Multi-metric kinetics certification scoring, reaction pathway assessment, and report aggregation for NEBCert.
+Aggregation of the NEB, transition-state, rate-constant and tunnelling checks into one report.
+
+The overall status is the worst individual status (FAIL > WARNING > PASS); a rate constant that the input
+does not determine (electronic barrier) is reported as NOT_APPLICABLE and does not count. A PASS means that the
+checks run found nothing wrong; it does not establish that the path or the barrier is correct.
 """
 
 from typing import Dict, Any, Optional, List
 from dataclasses import dataclass, asdict
 import numpy as np
+
+from nebcert import __version__
 
 from nebcert.core.neb_profile import NEBProfileResult
 from nebcert.core.ts_frequency import TSFrequencyResult
@@ -14,7 +20,7 @@ from nebcert.core.tunneling import TunnelingResult
 
 @dataclass
 class ReactionPathwayReport:
-    overall_status: str  # 'PASS', 'WARNING', 'FAIL'
+    overall_status: str  # 'PASS', 'WARNING', 'FAIL', 'NOT_APPLICABLE'
     validation_score: str
     metadata: Dict[str, Any]
     neb_profile: Optional[NEBProfileResult]
@@ -66,7 +72,9 @@ def assess_reaction_pathway_quality(
             recommendations.append(ts_freq_res.diagnostic_message)
 
     if tst_res is not None:
-        statuses.append(tst_res.status)
+        # NOT_APPLICABLE (rate from an electronic barrier) is reported but does not set the overall status
+        if tst_res.status != "NOT_APPLICABLE":
+            statuses.append(tst_res.status)
         if tst_res.status != "PASS":
             recommendations.append(tst_res.diagnostic_message)
 
@@ -76,17 +84,17 @@ def assess_reaction_pathway_quality(
             recommendations.append(tunneling_res.diagnostic_message)
 
     if not statuses:
-        overall_status = "PASS"
-        validation_score = "REACTION PATHWAY AUDIT = UNVERIFIED"
+        overall_status = "NOT_APPLICABLE"
+        validation_score = "NO CHECKS RUN"
     elif "FAIL" in statuses:
         overall_status = "FAIL"
-        validation_score = "REACTION PATHWAY AUDIT = FAILED / UNPHYSICAL ARTIFACTS DETECTED"
+        validation_score = "AT LEAST ONE CHECK FAILED"
     elif "WARNING" in statuses:
         overall_status = "WARNING"
-        validation_score = "REACTION PATHWAY AUDIT = ACCEPTABLE WITH METHODOLOGICAL WARNINGS"
+        validation_score = "PASSED WITH WARNINGS"
     else:
         overall_status = "PASS"
-        validation_score = "REACTION PATHWAY AUDIT = FULLY VALIDATED (PUBLICATION GRADE)"
+        validation_score = "ALL CHECKS PASSED"
 
     return ReactionPathwayReport(
         overall_status=overall_status,
@@ -99,7 +107,7 @@ def assess_reaction_pathway_quality(
         recommendations=recommendations,
         provenance={
             "tool": "NEBCert",
-            "version": "1.1.0",
-            "citation": "Monreal-Hernández, A. (2026). NEBCert: Automated Quality-Control, Transition State Verification, Nudged Elastic Band (NEB), Quantum Tunneling, and Reaction Kinetics Certification."
+            "version": __version__,
+            "citation": f"Monreal-Hernández, A. (2026). NEBCert: quality checks for NEB paths, transition states and tunnelling-corrected rate constants (v{__version__})."
         }
     )

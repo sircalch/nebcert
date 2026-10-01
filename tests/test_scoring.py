@@ -36,7 +36,7 @@ def test_full_nebcert_validation_pipeline():
     )
 
     tst_res = calculate_eyring_tst_rates(
-        e_activation_ev=neb_res.e_forward_barrier_ev
+        e_activation_ev=neb_res.e_forward_barrier_ev, barrier_type="gibbs"
     )
 
     tun_res = calculate_quantum_tunneling_corrections(
@@ -54,6 +54,7 @@ def test_full_nebcert_validation_pipeline():
     )
 
     assert report.overall_status == "PASS"
+    assert report.validation_score == "ALL CHECKS PASSED"
 
     with tempfile.TemporaryDirectory() as tmpdir:
         plots = generate_nebcert_figures(report, tmpdir, formats=["png", "svg"])
@@ -79,3 +80,17 @@ def test_cli_demo_execution():
         assert os.path.exists(os.path.join(tmpdir, "report.html"))
         assert os.path.exists(os.path.join(tmpdir, "nebcert_summary_table.csv"))
         assert os.path.exists(os.path.join(tmpdir, "citation.bib"))
+
+
+def test_no_checks_is_not_a_pass():
+    report = assess_reaction_pathway_quality(metadata={})
+    assert report.overall_status == "NOT_APPLICABLE"
+
+
+def test_rate_from_electronic_barrier_does_not_set_overall_status():
+    neb = calculate_neb_profile_analysis([0.0, 0.2, 0.45, 0.1, -0.2])
+    tst = calculate_eyring_tst_rates(neb.e_forward_barrier_ev)
+    report = assess_reaction_pathway_quality({}, neb, None, tst, None)
+    assert tst.status == "NOT_APPLICABLE"
+    assert report.overall_status == "PASS"
+    assert any("not a TST rate constant" in m for m in report.recommendations)

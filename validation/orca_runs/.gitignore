@@ -7,3 +7,7 @@
 !nh3_min.xyz
 !nh3_inverted.xyz
 !nh3_reactant.xyz
+!*.final.interp
+!*_NEB-TS_converged.xyz
+!*.hess
+*.appr.hess

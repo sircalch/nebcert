@@ -1,0 +1,12 @@
+# keep only what the benchmark reads; ORCA scratch files are not tracked
+*
+!.gitignore
+!*/
+!*.inp
+!*.out
+!reactant.xyz
+!product.xyz
+!*.final.interp
+!*_NEB-TS_converged.xyz
+!*.hess
+*.appr.hess

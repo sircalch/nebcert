@@ -160,8 +160,27 @@ def calculate_quantum_tunneling_corrections(
             ke_298 = pt.kappa_eckart
             break
 
-    status = "PASS"
-    diag = f"Quantum tunneling corrections computed (|nu| = {nu:.1f} cm^-1). At 298.15 K: kappa_Wigner = {kw_298:.2f}, kappa_Eckart = {ke_298:.2f}."
+    # Crossover temperature T_c = h c nu / (2 pi k_B): below it the barrier-top (parabolic) expansion
+    # behind the Wigner factor diverges and tunnelling proceeds well below the barrier top, where a
+    # one-dimensional Eckart barrier fitted to nu, V1 and V2 is a rough model (multidimensional
+    # tunnelling, e.g. small-curvature or instanton, is then the appropriate treatment).
+    t_cross = h_nu_j / (2.0 * np.pi * K_B_J_K)
+    notes = []
+    if e_reverse_barrier_ev is None:
+        notes.append("reverse barrier not given, symmetric barrier assumed")
+    if float(e_forward_barrier_ev) <= 0.0 or (e_reverse_barrier_ev is not None and float(e_reverse_barrier_ev) <= 0.0):
+        status = "FAIL"
+        diag = "Eckart factor undefined: a barrier height is zero or negative (values clipped to 1e-4 eV)."
+    elif t_cross > 298.15:
+        status = "WARNING"
+        notes.append(f"298.15 K is below the crossover temperature T_c = {t_cross:.0f} K, where the Wigner "
+                     f"factor is not valid and the 1D Eckart factor is only an estimate")
+        diag = f"|nu| = {nu:.1f} cm^-1; at 298.15 K kappa_Wigner = {kw_298:.2f}, kappa_Eckart = {ke_298:.2f}"
+    else:
+        status = "PASS"
+        diag = f"|nu| = {nu:.1f} cm^-1; at 298.15 K kappa_Wigner = {kw_298:.2f}, kappa_Eckart = {ke_298:.2f}"
+    if status != "FAIL":
+        diag += (" (" + "; ".join(notes) + ")." if notes else f" (T_c = {t_cross:.0f} K).")
 
     return TunnelingResult(
         imaginary_freq_cm1=nu,
