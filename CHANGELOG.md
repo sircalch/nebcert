@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.2.0 (unreleased)
+## 1.2.0 (2026-10-01)
 
 Version 1.1.0 was committed to the repository but never released; 1.2.0 contains its changes (listed under
 1.1.0 below) and the following. Version 1.0.0 is the only earlier release.
