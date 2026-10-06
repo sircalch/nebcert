@@ -1,6 +1,7 @@
 # NEBCert
 
 [![CI](https://github.com/sircalch/nebcert/actions/workflows/test.yml/badge.svg)](https://github.com/sircalch/nebcert/actions)
+[![PyPI](https://img.shields.io/pypi/v/nebcert.svg)](https://pypi.org/project/nebcert/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22217586.svg)](https://doi.org/10.5281/zenodo.22217586)
 
@@ -73,7 +74,7 @@ All scripts and results are in `validation/`; every number below is regenerated 
 ## Installation
 
 ```bash
-pip install "git+https://github.com/sircalch/nebcert@v1.2.0"
+pip install nebcert
 ```
 
 From source:
