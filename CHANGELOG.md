@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- Documentation site with installation, API reference and citation guidance: <https://sircalch.github.io/nebcert/>.
+- Support and governance statement in `CONTRIBUTING.md`; `CODE_OF_CONDUCT.md` and `SECURITY.md`; README links to all of them.
+
+### Fixed
+- The "Changelog" project URL pointed to a `main` branch that does not exist; it now points to `master`.
+
 ## 1.2.0 (2026-10-01)
 
 Version 1.1.0 was committed to the repository but never released; 1.2.0 contains its changes (listed under

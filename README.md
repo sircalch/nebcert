@@ -128,6 +128,12 @@ for message in report.recommendations:
     print("-", message)
 ```
 
+## Documentation and help
+
+- Documentation and API reference: <https://sircalch.github.io/nebcert/>
+- Questions and bug reports: [issue tracker](https://github.com/sircalch/nebcert/issues)
+- Support, contribution and governance: [`CONTRIBUTING.md`](CONTRIBUTING.md) · [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) · [`SECURITY.md`](SECURITY.md)
+
 ## Citation
 
 ```bash
