@@ -3,7 +3,7 @@ NEBCert: quality checks for NEB reaction paths, transition states and
 tunnelling-corrected rate constants.
 """
 
-__version__ = "1.2.1"
+__version__ = "1.2.2"
 __author__ = "Andrés Monreal-Hernández"
 __license__ = "MIT"
 

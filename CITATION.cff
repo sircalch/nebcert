@@ -6,7 +6,7 @@ authors:
     orcid: "https://orcid.org/0009-0009-1207-8597"
     affiliation: "Universidad Estatal de Sonora"
 title: "NEBCert: quality checks for NEB paths, transition states and tunnelling-corrected rate constants"
-version: 1.2.1
+version: 1.2.2
 doi: 10.5281/zenodo.22217586
 date-released: 2026-11-20
 license: MIT
