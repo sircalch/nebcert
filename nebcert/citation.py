@@ -9,7 +9,7 @@ TITLE = "NEBCert: quality checks for NEB paths, transition states and tunnelling
 
 BIBTEX = (
     "@software{monreal2026nebcert,\n"
-    "  author = {Monreal-Hern{\\'a}ndez, Andr{\\'e}s},\n"
+    "  author = {Monreal-Hernández, Andrés},\n"
     f"  title = {{{{{TITLE}}}}},\n"
     "  year = {2026},\n"
     f"  version = {{{__version__}}},\n"
