@@ -3,8 +3,8 @@ NEBCert: quality checks for NEB reaction paths, transition states and
 tunnelling-corrected rate constants.
 """
 
-__version__ = "1.2.0"
-__author__ = "Andres Monreal-Hernández"
+__version__ = "1.2.1"
+__author__ = "Andrés Monreal-Hernández"
 __license__ = "MIT"
 
 from nebcert.core.neb_profile import calculate_neb_profile_analysis, NEBProfileResult
